@@ -7,7 +7,7 @@ function countdown_to_start (){
    for($i=10; $i>=$numbers; $i--) {
 
         if($i==1) {
-             print $i."..."."flight";
+             print $i."..."."flight" . '<br>';
         } else {
             
            echo $i . '...' ;

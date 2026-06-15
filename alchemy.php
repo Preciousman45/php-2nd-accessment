@@ -1,28 +1,32 @@
 <?php 
 
 
-function check_ingredient_match($recipe,$inventory){
-    $recipe ;
-    $inventory ;
-    $missing_ingredient = [];
+function check_ingredient_match( $recipe ,$inventory){
 
-    $required_percentage = "";
+     $abscentIngredient = []; 
 
-    if (count($inventory) > 0) {
-      $required_percentage = (count($recipe) / count($inventory)) * 100;
-  } else {
-      $required_percentage = 0; // Default fallback value
-  }
+     $uniqueArry= array_unique($recipe);
 
+     $needed = count($uniqueArry);
 
-   foreach( $inventory as $content ) {
-      if (!in_array($content, $recipe)) {
-        $missing_ingredient [] = $content ;
+    
+    
+   
+
+    foreach( $recipe as $content ) {
+      if (!in_array($content, $inventory,true)) {
+        $abscentIngredient[] = $content ;
 
       }
+
+
+    $availableIngredient = $needed -(count($abscentIngredient));
+    $percentage = (float)(($availableIngredient/$needed) * 100 );
+
+
    }
 
-  return [$required_percentage,$missing_ingredient];
+  return [$percentage,$abscentIngredient];
 
 }
 
