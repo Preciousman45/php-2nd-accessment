@@ -43,7 +43,7 @@ footer();
 
 
 
-function option1 (){
+function ViewALL (){
    global $filename;
    $file = fopen($filename, 'r');
 // 
@@ -60,7 +60,7 @@ function option1 (){
 
 
 
-function option2(){
+function AddItem(){
    global $filename;
    $NewStock = readline("ADD ITEM IN THE FOLLOWING ORDER:\n   Name, Quantity, Price ");
 
@@ -79,7 +79,7 @@ function option2(){
 
 
 
-function option3(){
+function SearchItem(){
    global $filename ;
 $file = fopen($filename, 'r+');
 $found ;
@@ -104,7 +104,7 @@ fclose($file);
 
 
 
-function option4(){
+function UpdateQuantity(){
 
 global $filename;
 global $UpdateArray;
@@ -138,7 +138,7 @@ option1();
 
 
 
-function option5(){
+function DeleteItem(){
 
 global $filename;
 global $UpdateArray;
@@ -167,7 +167,7 @@ option1();
 
 
 
-function option6(){
+function TotalStock(){
   global $filename;
   global $UpdateArray;
    $DesiredStockTotal =  readline("DO YOU WANT THE PRICE OF THE TOTAL STOCK OR A PARTICULAR STOCK:\n YES(DESIRED STOCK)/NO(TOTAL STOCK)");

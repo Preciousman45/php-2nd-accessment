@@ -35,7 +35,7 @@ if($stockOptions){
 
 if ($stockOptions == 1){
 
-option1();
+ViewALL();
 
 
 
@@ -43,32 +43,32 @@ option1();
 } elseif ($stockOptions == 2) {
     
 
-option2();
+AddItem();
    
 
   } elseif ($stockOptions == 3) {
 
-  option3();
+  SearchItem();
 
 
 
 
    } elseif ($stockOptions == 4) {
       
-   option4();
+   UpdateQuantity();
 
 
 
 } elseif ($stockOptions == 5) {
 
-option5();
+DeleteItem();
 
 
 
 
 } elseif ($stockOptions == 6) {
 
-option6();
+TotalStock();
 
 
 } elseif ($stockOptions == 7) {
