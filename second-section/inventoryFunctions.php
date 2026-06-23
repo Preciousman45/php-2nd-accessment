@@ -1,66 +1,70 @@
 <?php
 
-function initial(){
+ function headerOfDisplay(){
    
-print_r("+----+------------------+----------+--------+
+print_r("\n+----+------------------+----------+--------+
 | ID | Name             | Quantity | Price  |
-+----+------------------+----------+--------+");
++----+------------------+----------+--------+\n");
 
-};
-
-
+}
 
 
 
-function footer(){
-   print_r("+----+------------------+----------+--------+");
-};
 
+ function footerOfDisplay(){
+  echo "\n+----+------------------+----------+--------+\n";
 
+}
 
 
 
 
 
-
-
-
-function openingCSV ($file){
+ function openingCSV ($file){
    global $UpdateArray;
    while (($fileContent = fgetcsv($file)) !== false) {
    $UpdateArray []= $fileContent;
 };
-};
+}
 
 
-function closing($value){
-   initial();
+
+
+
+
+ function closing($value){
+  headerOfDisplay();
 echo "\n";
 echo implode(" | ", $value) . "\n";
 
-footer();
-};
+footerOfDisplay();
+}
 
 
 
-function ViewALL (){
+
+
+
+
+
+ function ViewALL (){
    global $filename;
    $file = fopen($filename, 'r');
 // 
-            initial();
+           headerOfDisplay();
             while(( $fileContent = fgetcsv($file))!== false){
               echo implode(" | ", $fileContent) . "\n";  
             };
 
-            print_r ($fileContent) ;
-            footer();
+           
+           footerOfDisplay();
 
         fclose($file);
-};
+}
 
 
 
-function AddItem(){
+ function AddItem(){
    global $filename;
    $NewStock = readline("ADD ITEM IN THE FOLLOWING ORDER:\n   Name, Quantity, Price ");
 
@@ -69,7 +73,7 @@ function AddItem(){
     $file = fopen($filename,'a');
      fputcsv($file, $NewStockArray);
     fclose($file);
-    option1();
+   ViewALL();
 }
 
 }
@@ -78,11 +82,10 @@ function AddItem(){
 
 
 
-
-function SearchItem(){
+ function SearchItem(){
    global $filename ;
 $file = fopen($filename, 'r+');
-$found ;
+$foundItem = [] ;
 
 $DesiredItem = readline("SEARCH FOR AN ITEM BY NAME:");
 
@@ -99,12 +102,7 @@ fclose($file);
 
 
 
-
-
-
-
-
-function UpdateQuantity(){
+ function UpdateQuantity(){
 
 global $filename;
 global $UpdateArray;
@@ -129,7 +127,7 @@ global $UpdateArray;
 
  fclose($NewFile);
 
-option1();
+ViewALL();
 
 }
 
@@ -138,7 +136,7 @@ option1();
 
 
 
-function DeleteItem(){
+ function DeleteItem(){
 
 global $filename;
 global $UpdateArray;
@@ -150,7 +148,7 @@ fclose($file);
 $NewFile = fopen($filename, 'w');
   foreach ($UpdateArray as $key => $content) {
   if(in_array($StockToDelete,$content)){
-      unset($$UpdateArray[$key]);
+      unset($UpdateArray[$key]);
       continue;
    }
    fputcsv($NewFile, $content);
@@ -158,16 +156,14 @@ $NewFile = fopen($filename, 'w');
   }
  fclose($NewFile);
 
-option1();
+ViewALL();
 
 }
 
 
 
 
-
-
-function TotalStock(){
+ function TotalStock(){
   global $filename;
   global $UpdateArray;
    $DesiredStockTotal =  readline("DO YOU WANT THE PRICE OF THE TOTAL STOCK OR A PARTICULAR STOCK:\n YES(DESIRED STOCK)/NO(TOTAL STOCK)");
@@ -182,7 +178,7 @@ openingCSV($file);
   foreach ($UpdateArray as $key => $content) {
   if(in_array($DesiredStock,$content)){
       $content[3] = $content[1]*$content[2];
-       closing($content);
+      closing($content);
       continue;
    };
 
@@ -197,12 +193,26 @@ fclose($file);
 
   foreach ($UpdateArray as $key => $content) {
   $content[3] = $content[1] * $content[2];
-  closing($content);
+ closing($content);
       continue;
    };
   };
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ?>

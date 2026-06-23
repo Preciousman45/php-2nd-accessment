@@ -7,11 +7,17 @@ $filename = './inventory.csv';
 
  $UpdateArray = [];
   
- $nameDelete;
+
  
 
- print_r($filename);
  
+ 
+
+
+
+
+
+
 $stockOptions = readline("=== Inventory Manager ===
 1. View all items
 2. Add item
@@ -21,16 +27,11 @@ $stockOptions = readline("=== Inventory Manager ===
 6. Total stock value
 7. Exit
 Choose an option:");
-  
-
-
-
-
-
 
 
 
 if($stockOptions){
+
 
 
 if ($stockOptions == 1){
@@ -71,13 +72,29 @@ DeleteItem();
 TotalStock();
 
 
+
 } elseif ($stockOptions == 7) {
-   echo 'Exited';
+   echo "EXITED";
+  
 }
- 
-};
+
+}
+
+
+
 
    
+
+
+
+
+
+
+
+
+
+
+
 
 
 
