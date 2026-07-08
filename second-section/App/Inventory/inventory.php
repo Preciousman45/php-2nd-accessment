@@ -1,6 +1,22 @@
 <?php
 
- function headerOfDisplay(){
+namespace App\Inventory;
+
+
+
+class InventoryClass {
+
+public  $filename;
+public $UpdateArray;
+
+
+public function __construct($filename,$UpdateArray = []) {
+   
+    $this->filename = $filename;
+    $this->UpdateArray = $UpdateArray;
+}
+
+public function headerOfDisplay(){
    
 print_r("\n+----+------------------+----------+--------+
 | ID | Name             | Quantity | Price  |
@@ -8,31 +24,36 @@ print_r("\n+----+------------------+----------+--------+
 
 }
 
- function footerOfDisplay(){
+  public function footerOfDisplay(){
   echo "+----+------------------+----------+--------+";
 
 }
 
 
- function openingCSV ($filename,&$UpdateArray, string $mode){
-   $file = fopen($filename, $mode);
+public function openingCSV (string $mode){
+    
+   $this->UpdateArray=[];
+   $file = fopen($this->filename, $mode);
    while (($fileContent = fgetcsv($file)) !== false) {
-   $UpdateArray []= $fileContent;
+   $this->UpdateArray []= $fileContent;
 }
 fclose($file); 
 }
+  
 
- function closing($value){
-  headerOfDisplay();
+
+public function closing($value){
+  $this->headerOfDisplay();
 echo "\n";
 echo implode(" | ", $value) . "\n";
 
-footerOfDisplay();
+$this->footerOfDisplay();
 }
 
 
-function findItem(&$UpdateArray, $SearchItem) {
-    foreach ($UpdateArray as $index => $content) {
+
+public function findItem( $SearchItem) {
+    foreach ($this->UpdateArray as $index => $content) {
         if (in_array($SearchItem, $content)) {
             return ['index' => $index, 'content' => $content];
         }
@@ -43,8 +64,8 @@ function findItem(&$UpdateArray, $SearchItem) {
 
 
 
-function ViewALL($filename) {
-    $file = fopen($filename, 'r');
+public function ViewALL() {
+    $file = fopen($this->filename, 'r');
     
     // column widths
     $w = [4, 18, 10, 8];
@@ -66,84 +87,83 @@ function ViewALL($filename) {
 
 
 
- function AddItem($filename,$NewStock,$UpdateArray){
-
-    
-    if($NewStock) {
-      openingCSV ($filename,$UpdateArray,'r');
-    $lastindex = count($UpdateArray) - 1;
+public function AddItem($NewStock){
+  $this->UpdateArray = [];
+  if($NewStock) {
+      $this->openingCSV ('r');
+    $lastindex = count($this->UpdateArray) - 1;
     $NewStockArray = explode(',', $NewStock);
     $NewID = $lastindex + 1 ;
     array_unshift($NewStockArray, $NewID);
-    $file = fopen($filename,'a');
+    $file = fopen($this->filename,'a');
     fputcsv($file, $NewStockArray);
     fclose($file);
-   ViewALL($filename);
+   $this->ViewALL();
 }
 
 }
 
 
- function SearchItem($filename,$DesiredItem){
-$file = fopen($filename, 'r+');
+public function SearchItem($DesiredItem){
+$file = fopen($this->filename, 'r+');
 $foundItem = [] ;
 while (($fileContent = fgetcsv($file)) !== false) {
     if (in_array($DesiredItem, $fileContent)) {
        $foundItem = $fileContent ;
     }
 }
-closing($foundItem);
+$this->closing($foundItem);
 fclose($file);
 }
 
 
- function UpdateQuantity($filename,&$UpdateArray,$StockToUpdate,$NewQuantityOfStock ){
-  $file = fopen($filename, 'r');
+public function UpdateQuantity($StockToUpdate,$NewQuantityOfStock ){ //price...wednesday
+  $file = fopen($this->filename, 'r');
    while (($fileContent = fgetcsv($file)) !== false) {
     if (in_array($StockToUpdate, $fileContent)) {
        $fileContent[2] = $NewQuantityOfStock ;
     }
-    $UpdateArray []= $fileContent;
+    $this->UpdateArray []= $fileContent;
 }
    fclose($file);
- $NewFile = fopen($filename, 'w');
-  foreach ($UpdateArray as $content) {
+ $NewFile = fopen($this->filename, 'w');
+  foreach ($this->UpdateArray as $content) {
    fputcsv($NewFile, $content);
   }
  fclose($NewFile);
-ViewALL($filename);
+$this->ViewALL();
 
 }
 
 
-function DeleteItem($filename,$UpdateArray, $StockToDelete){
-$UpdateArray = []; 
-openingCSV($filename,$UpdateArray,'r');
-$NewFile = fopen($filename, 'w');
-$result = findItem($UpdateArray, $StockToDelete);
-unset($UpdateArray[$result['index']]);
-foreach ($UpdateArray as $content) {
+public function DeleteItem($StockToDelete){
+$this->UpdateArray = []; 
+$this->openingCSV('r');
+$NewFile = fopen($this->filename, 'w');
+$result = $this->findItem( $StockToDelete);
+unset($this->UpdateArray[$result['index']]);
+foreach ($this->UpdateArray as $content) {
     fputcsv($NewFile, $content);
 }
 fclose($NewFile);
-ViewALL($filename);
+$this->ViewALL();
 
 }
 
 
-function TotalStock($filename,$UpdateArray,$DesiredStockTotal){
-if($DesiredStockTotal == 'YES'){
+public function TotalStock($DesiredStockTotal){
+if($DesiredStockTotal == 'YES'){ //
 $DesiredStock = readline("WHAT IS THE NAME OF THE STOCK YOU ARE REQUESTING FOR:");
-openingCSV($filename,$UpdateArray,'r');
-$result = findItem($UpdateArray,$DesiredStock);
+$this->openingCSV('r');
+$result = $this->findItem($DesiredStock);
 $result['content'][4]= $result['content'][2] * $result['content'][3];
-closing($result['content']);
+$this->closing($result['content']);
 
   } elseif ($DesiredStockTotal == 'NO') {
-openingCSV($filename,$UpdateArray,'r+');
-  foreach ($UpdateArray as $key => $content) {
+$this->openingCSV('r+');
+  foreach ($this->UpdateArray as $key => $content) {
   $content[4] = $content[2] * $content[3];
- closing($content);
+ $this->closing($content);
       continue;
    };
   };
@@ -151,5 +171,7 @@ openingCSV($filename,$UpdateArray,'r+');
 }
 
 
+}
+ 
 
 ?>
