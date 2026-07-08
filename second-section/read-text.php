@@ -1,22 +1,24 @@
 <?php
 
-
-require 'inventoryFunctions.php'; 
+require_once 'App/Class.php';
+require_once 'inventoryFunctions.php'; 
 $filename = './inventory.csv';
 
+
+use App\InventoryManager;
 
  $UpdateArray = [];
   
 
- 
-
- 
- 
 
 
 
 
 
+$inventoryManager = new InventoryManager($filename);
+
+
+while(true){
 
 $stockOptions = readline("=== Inventory Manager ===
 1. View all items
@@ -29,56 +31,41 @@ $stockOptions = readline("=== Inventory Manager ===
 Choose an option:");
 
 
-
-if($stockOptions){
-
-
-
-if ($stockOptions == 1){
-
-ViewALL();
-
-
-
-
-} elseif ($stockOptions == 2) {
-    
-
-AddItem();
-   
-
-  } elseif ($stockOptions == 3) {
-
-  SearchItem();
-
-
-
-
-   } elseif ($stockOptions == 4) {
-      
-   UpdateQuantity();
-
-
-
-} elseif ($stockOptions == 5) {
-
-DeleteItem();
+switch ($stockOptions) {
+	case 1 :
+		$inventoryManager->viewAllItems();
+		break;
+	case 2 :
+		$NewStock = readline("ADD ITEM IN THE FOLLOWING ORDER:\n   Name, Quantity, Price ");
+      $inventoryManager->addItem($NewStock);
+		break;
+	case 3 :
+		$DesiredItem = readline("SEARCH FOR AN ITEM BY NAME:");
+      $inventoryManager->searchItem($DesiredItem);
+		break;
+	case 4  :
+		$StockToUpdate =  readline("SEARCH THE NAME OF THE QUANTITY YOU WANT TO UPDATE:");
+      $NewQuantityOfStock =  readline("NEW QUANTITY:");
+      $inventoryManager->updateQuantity($StockToUpdate, $NewQuantityOfStock);
+		break;
+   case 5 :
+		$StockToDelete =  readline("WHAT ITEM DO YOU WANT TO DELETE:");
+      $inventoryManager->deleteItem($StockToDelete);
+		break;
+	case 6 :
+		$DesiredStockTotal =  readline("DO YOU WANT THE PRICE OF THE TOTAL STOCK OR A PARTICULAR STOCK:\n YES(DESIRED STOCK)/NO(TOTAL STOCK)");
+      $inventoryManager->totalStockValue($DesiredStockTotal);
+		break;
+	case 7 :
+		echo "EXITED";
+		exit;
+	
+};
 
 
-
-
-} elseif ($stockOptions == 6) {
-
-TotalStock();
-
-
-
-} elseif ($stockOptions == 7) {
-   echo "EXITED";
-  
 }
 
-}
+
 
 
 

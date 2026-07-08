@@ -8,29 +8,19 @@ print_r("\n+----+------------------+----------+--------+
 
 }
 
-
-
-
  function footerOfDisplay(){
-  echo "\n+----+------------------+----------+--------+\n";
+  echo "+----+------------------+----------+--------+";
 
 }
 
 
-
-
-
- function openingCSV ($file){
-   global $UpdateArray;
+ function openingCSV ($filename,&$UpdateArray, string $mode){
+   $file = fopen($filename, $mode);
    while (($fileContent = fgetcsv($file)) !== false) {
    $UpdateArray []= $fileContent;
-};
 }
-
-
-
-
-
+fclose($file); 
+}
 
  function closing($value){
   headerOfDisplay();
@@ -41,177 +31,124 @@ footerOfDisplay();
 }
 
 
-
-
-
-
-
-
- function ViewALL (){
-   global $filename;
-   $file = fopen($filename, 'r');
-// 
-           headerOfDisplay();
-            while(( $fileContent = fgetcsv($file))!== false){
-              echo implode(" | ", $fileContent) . "\n";  
-            };
-
-           
-           footerOfDisplay();
-
-        fclose($file);
+function findItem(&$UpdateArray, $SearchItem) {
+    foreach ($UpdateArray as $index => $content) {
+        if (in_array($SearchItem, $content)) {
+            return ['index' => $index, 'content' => $content];
+        }
+    }
+    return null;
 }
 
 
 
- function AddItem(){
-   global $filename;
-   $NewStock = readline("ADD ITEM IN THE FOLLOWING ORDER:\n   Name, Quantity, Price ");
 
-    if($NewStock) {
-    $NewStockArray = explode(',', $NewStock);
-    $file = fopen($filename,'a');
-     fputcsv($file, $NewStockArray);
+function ViewALL($filename) {
+    $file = fopen($filename, 'r');
+    
+    // column widths
+    $w = [4, 18, 10, 8];
+    
+    $border = "+----+------------------+----------+--------+";
+    $header = "| " . str_pad("ID", $w[0]) . "| " . str_pad("Name", $w[1]) . "| " . str_pad("Quantity", $w[2]) . "| " . str_pad("Price", $w[3]) . "|";
+    
+    echo $border . "\n";
+    echo $header . "\n";
+    echo $border . "\n";
+    
+    while (($row = fgetcsv($file)) !== false) {
+        echo "| " . str_pad($row[0], $w[0]) . "| " . str_pad($row[1], $w[1]) . "| " . str_pad($row[2], $w[2]) . "| " . str_pad($row[3], $w[3]) . "|\n";
+    }
+    
+    echo $border . "\n";
     fclose($file);
-   ViewALL();
+}
+
+
+
+ function AddItem($filename,$NewStock,$UpdateArray){
+
+    
+    if($NewStock) {
+      openingCSV ($filename,$UpdateArray,'r');
+    $lastindex = count($UpdateArray) - 1;
+    $NewStockArray = explode(',', $NewStock);
+    $NewID = $lastindex + 1 ;
+    array_unshift($NewStockArray, $NewID);
+    $file = fopen($filename,'a');
+    fputcsv($file, $NewStockArray);
+    fclose($file);
+   ViewALL($filename);
 }
 
 }
 
 
-
-
-
- function SearchItem(){
-   global $filename ;
+ function SearchItem($filename,$DesiredItem){
 $file = fopen($filename, 'r+');
 $foundItem = [] ;
-
-$DesiredItem = readline("SEARCH FOR AN ITEM BY NAME:");
-
 while (($fileContent = fgetcsv($file)) !== false) {
     if (in_array($DesiredItem, $fileContent)) {
        $foundItem = $fileContent ;
     }
 }
-
 closing($foundItem);
 fclose($file);
 }
 
 
-
-
- function UpdateQuantity(){
-
-global $filename;
-global $UpdateArray;
-   $StockToUpdate =  readline("SEARCH THE NAME OF THE QUANTITY YOU WANT TO UPDATE:");
-   $NewQuantityOfStock =  readline("NEW QUANTITY:");
-  $file = fopen($filename, 'r+');
-
+ function UpdateQuantity($filename,&$UpdateArray,$StockToUpdate,$NewQuantityOfStock ){
+  $file = fopen($filename, 'r');
    while (($fileContent = fgetcsv($file)) !== false) {
     if (in_array($StockToUpdate, $fileContent)) {
-       $fileContent[1] = $NewQuantityOfStock ;
+       $fileContent[2] = $NewQuantityOfStock ;
     }
     $UpdateArray []= $fileContent;
-
 }
    fclose($file);
-    
-
  $NewFile = fopen($filename, 'w');
   foreach ($UpdateArray as $content) {
    fputcsv($NewFile, $content);
   }
-
  fclose($NewFile);
-
-ViewALL();
+ViewALL($filename);
 
 }
 
 
-
-
-
-
- function DeleteItem(){
-
-global $filename;
-global $UpdateArray;
-   $StockToDelete =  readline("WHAT ITEM DO YOU WANT TO DELETE:");
-$file = fopen($filename, 'r+');
-openingCSV($file);
-fclose($file);
-
+function DeleteItem($filename,$UpdateArray, $StockToDelete){
+$UpdateArray = []; 
+openingCSV($filename,$UpdateArray,'r');
 $NewFile = fopen($filename, 'w');
-  foreach ($UpdateArray as $key => $content) {
-  if(in_array($StockToDelete,$content)){
-      unset($UpdateArray[$key]);
-      continue;
-   }
-   fputcsv($NewFile, $content);
-//      # code...
-  }
- fclose($NewFile);
-
-ViewALL();
+$result = findItem($UpdateArray, $StockToDelete);
+unset($UpdateArray[$result['index']]);
+foreach ($UpdateArray as $content) {
+    fputcsv($NewFile, $content);
+}
+fclose($NewFile);
+ViewALL($filename);
 
 }
 
 
-
-
- function TotalStock(){
-  global $filename;
-  global $UpdateArray;
-   $DesiredStockTotal =  readline("DO YOU WANT THE PRICE OF THE TOTAL STOCK OR A PARTICULAR STOCK:\n YES(DESIRED STOCK)/NO(TOTAL STOCK)");
+function TotalStock($filename,$UpdateArray,$DesiredStockTotal){
 if($DesiredStockTotal == 'YES'){
-
 $DesiredStock = readline("WHAT IS THE NAME OF THE STOCK YOU ARE REQUESTING FOR:");
-$file = fopen($filename, 'r+');
-
-openingCSV($file);
- fclose($file);
-
-  foreach ($UpdateArray as $key => $content) {
-  if(in_array($DesiredStock,$content)){
-      $content[3] = $content[1]*$content[2];
-      closing($content);
-      continue;
-   };
-
-  };
+openingCSV($filename,$UpdateArray,'r');
+$result = findItem($UpdateArray,$DesiredStock);
+$result['content'][4]= $result['content'][2] * $result['content'][3];
+closing($result['content']);
 
   } elseif ($DesiredStockTotal == 'NO') {
-
-$file = fopen($filename, 'r+');
-
-openingCSV($file);
-fclose($file);
-
+openingCSV($filename,$UpdateArray,'r+');
   foreach ($UpdateArray as $key => $content) {
-  $content[3] = $content[1] * $content[2];
+  $content[4] = $content[2] * $content[3];
  closing($content);
       continue;
    };
   };
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
